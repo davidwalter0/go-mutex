@@ -1,3 +1,8 @@
+// Copyright 2018 David Walter. All rights reserved.
+// Use of this source code is governed by a Apache-style
+// license that can be found in the LICENSE file.
+
+/*
 ---
 **mutex**
 
@@ -34,11 +39,10 @@ Call Monitor with defer for scoped lock/unlock
     // closure
     { // enter scope lock
         defer mtx.Monitor()()
-    /*
-     ...
-     ...
-     ...
-    */
+
+    // ...
+    // ...
+    // ...
     } // exit scope unlock
 ```
 
@@ -54,10 +58,12 @@ With a shared scoped set of go routines or threads an anonymous monitor created 
     var m := mutex.NewMonitor()
     { // enter scope lock
         defer m()()
-    /*
-     ...
-     ...
-     ...
-    */
+    // ...
+    // ...
+    // ...
+
     } // exit scope unlock
 ```
+
+*/
+package mutex
