@@ -8,6 +8,11 @@ import (
 	"time"
 )
 
+// TestDebug enables verbose output if -v flag is given to test
+func TestDebug(*testing.T) {
+	testDebug = testing.Verbose()
+}
+
 func drain(which string, c chan int) {
 	if testDebug {
 		fmt.Printf("enter drain %s len %d cap %d\n", which, len(c), cap(c))

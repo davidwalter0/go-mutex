@@ -10,7 +10,7 @@ import (
 	"sync"
 )
 
-// debug var for testing
+// testDebug debug var for testing
 var testDebug bool
 
 func scopedTrace(text string) func() {
@@ -20,8 +20,11 @@ func scopedTrace(text string) func() {
 	}
 }
 
-func spaces(n int) string {
-	return fmt.Sprintf("%*s", 2*n, " ")
+func spaces(n int) (s string) {
+	if n > 0 {
+		return fmt.Sprintf("%*s", 2*n, " ")
+	}
+	return
 }
 
 // Mutex local synonym for sync.Mutex for receiver methods
@@ -32,28 +35,38 @@ func NewMutex() *Mutex {
 	return &Mutex{}
 }
 
+// Monitor: a deferable function scoped lock
+//   monitor := NewMonitor()
+//   defer monitor()()
+type Monitor func(...interface{}) func() // func() func()
+
 // NewMonitor return a deferable preinitialized private mutex closure
 // monitor function.
 // defer scope: acquire lock on entry, and release on scope closure
 // created anonymously in the function closure
-
-func NewMonitor() func(...interface{}) func() {
+//
+// Use:
+//   monitor := NewMonitor()
+//   defer monitor()()
+func NewMonitor() Monitor {
 	var mutex = NewMutex()
 	return func(args ...interface{}) func() {
 		var i int
+		var text string
 		if len(args) > 0 {
 			switch args[0].(type) {
 			case int:
 				i = args[0].(int)
+				text = fmt.Sprintf("%d", i)
 			}
 		}
 		if testDebug {
-			defer scopedTrace(spaces(i) + fmt.Sprintf("monitor lock %d", i))()
+			defer scopedTrace(spaces(i) + fmt.Sprintf("monitor lock %s", text))()
 		}
 		mutex.Lock()
 		return func() {
 			if testDebug {
-				defer scopedTrace(spaces(i) + fmt.Sprintf("monitor unlock %d", i))()
+				defer scopedTrace(spaces(i) + fmt.Sprintf("monitor unlock %s", text))()
 			}
 			mutex.Unlock()
 		}
